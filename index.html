@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y68/D20 Smartwatch Web Controller</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Y68/D20 Smartwatch Web Interface</h1>
+    <p>Control your smartwatch directly from a Web Bluetooth enabled browser (e.g., Chrome, Edge).</p>
+
+    <div class="card">
+        <button id="connectBtn">Connect to Smartwatch</button>
+        <button id="syncBtn" disabled>Send Sync Command</button>
+        <div id="status">Disconnected</div>
+    </div>
+
+    <script>
+        const connectBtn = document.getElementById('connectBtn');
+        const syncBtn = document.getElementById('syncBtn');
+        const statusDiv = document.getElementById('status');
+
+        // UUIDs matching the smartwatch.cpp sketch
+        const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        const CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+
+        let bluetoothDevice;
+        let characteristicFunc;
+
+        connectBtn.addEventListener('click', async () => {
+            try {
+                statusDiv.innerText = 'Scanning...';
+                
+                // Request Bluetooth device filtering by Y68 or D20 name
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { name: 'Y68' },
+                        { name: 'D20' }
+                    ],
+                    optionalServices: [SERVICE_UUID]
+                });
+
+                statusDiv.innerText = 'Connecting...';
+                const server = await bluetoothDevice.gatt.connect();
+                const service = await server.getPrimaryService(SERVICE_UUID);
+                characteristicFunc = await service.getCharacteristic(CHAR_UUID);
+
+                statusDiv.innerText = 'Connected!';
+                statusDiv.style.color = '#2ecc71';
+                connectBtn.innerText = 'Disconnect';
+                syncBtn.disabled = false;
+
+                bluetoothDevice.addEventListener('serverdisconnected', onDisconnect);
+
+            } catch (error) {
+                console.error('Connection failed:', error);
+                statusDiv.innerText = 'Connection Failed';
+                statusDiv.style.color = '#e74c3c';
+            }
+        });
+
+        syncBtn.addEventListener('click', async () => {
+            if (!characteristicFunc) return;
+            
+            try {
+                const encoder = new TextEncoder();
+                const message = "Time to sync";
+                await characteristicFunc.writeValue(encoder.encode(message));
+                alert('Sync command sent to Y68/D20!');
+            } catch (error) {
+                console.error('Error writing to device:', error);
+                alert('Failed to send data.');
+            }
+        });
+
+        function onDisconnect() {
+            statusDiv.innerText = 'Disconnected';
+            statusDiv.style.color = '#e74c3c';
+            connectBtn.innerText = 'Connect to Smartwatch';
+            syncBtn.disabled = true;
+            characteristicFunc = null;
+        }
+    </script>
+</body>
+      </html>
+ <script src="smartwatch.cpp" defer></script>
