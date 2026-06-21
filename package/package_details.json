@@ -1,0 +1,20 @@
+{
+    "package_name": "Watchlin Smartwatch Sync",
+    "target_device": "Y68/D20 Smartband",
+    "version": "1.0.4",
+    "release_date": "2026-06-21",
+    "author": "Watchlin Team",
+    "supported_modes": [
+        "kids",
+        "young",
+        "teen",
+        "adult",
+        "elder"
+    ],
+    "configuration": {
+        "auto_sync": true,
+        "encryption_level": "standard",
+        "fallback_profile": "adult"
+    },
+    "status": "active"
+}
