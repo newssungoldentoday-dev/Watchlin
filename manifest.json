@@ -1,0 +1,20 @@
+{
+  "short_name": "Smartwatch Sync",
+  "name": "Y68/D20 Smartwatch Controller",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x192"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f4f7f6",
+  "theme_color": "#3498db",
+  "display": "standalone"
+}
