@@ -1,0 +1,6 @@
+/y68-smartwatch-sync          <-- Root Folder (Main Directory)
+ ├── index.html               <-- Root File (Main webpage interface)
+ ├── script.js                <-- Root File (Web Bluetooth logic)
+ ├── manifest.json            <-- Root File (PWA / App configuration)
+ ├── conf.py                  <-- Root File (Sphinx documentation config)
+ └── navigator.txt            <-- Root File (New text file)
